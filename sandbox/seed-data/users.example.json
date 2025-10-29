@@ -1,0 +1,22 @@
+{
+  "roles": ["admin", "user", "guest"],
+  "defaultPreferences": {
+    "theme": "light",
+    "notifications": true,
+    "language": "en",
+    "timezone": "UTC"
+  },
+  "defaultSettings": {
+    "emailVerified": false,
+    "profileComplete": false,
+    "lastLogin": null,
+    "twoFactorEnabled": false
+  },
+  "statusOptions": ["active", "inactive", "suspended", "pending"],
+  "permissions": {
+    "admin": ["read", "write", "delete", "manage"],
+    "user": ["read", "write"],
+    "guest": ["read"]
+  }
+}
+

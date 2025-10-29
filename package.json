@@ -1,0 +1,84 @@
+{
+  "name": "firebase-sandbox-emulator-suite",
+  "version": "0.1.0",
+  "description": "Plug-and-play Firebase sandbox toolkit: emulators, modular seeding, schema sync + diff, CI guard, web admin panel, and scenario runner. Works with any Firebase app.",
+  "keywords": [
+    "firebase",
+    "emulator",
+    "testing",
+    "development",
+    "sandbox",
+    "nextjs",
+    "typescript"
+  ],
+  "author": "unstablelogic",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/unstablelogic/firebase-sandbox-emulator-suite.git"
+  },
+  "scripts": {
+    "dev": "next dev",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
+    "type-check": "tsc --noEmit",
+    "sandbox:start": "npx firebase emulators:start --import .firebase-data --export-on-exit .firebase-data",
+    "sandbox:test": "concurrently \"npm run sandbox:start\" \"next dev\"",
+    "sandbox:health": "ts-node --project tsconfig.scripts.json scripts/healthCheck.ts",
+    "sandbox:reset": "ts-node --project tsconfig.scripts.json scripts/resetLocalEnv.ts",
+    "sandbox:backup": "npx firebase emulators:export ./backups",
+    "seed:all": "ts-node --project tsconfig.scripts.json scripts/seedAll.ts",
+    "seed:module": "ts-node --project tsconfig.scripts.json scripts/seedModule.ts",
+    "seed:auth": "ts-node --project tsconfig.scripts.json scripts/seedAuth.ts",
+    "schema:export": "ts-node firebase/schema-sync/exportSchema.ts",
+    "schema:import": "ts-node firebase/schema-sync/importSchema.ts",
+    "schema:diff": "ts-node firebase/schema-sync/diffSchema.ts",
+    "schema:sync": "npm run schema:export && npm run schema:import",
+    "sandbox:trigger": "ts-node scripts/triggerFunction.ts",
+    "sandbox:scenario": "ts-node scripts/runScenario.ts",
+    "sandbox:stress": "ts-node scripts/scenarios/stressTest.ts"
+  },
+  "dependencies": {
+    "next": "^14.2.0",
+    "react": "^18.3.0",
+    "react-dom": "^18.3.0",
+    "firebase": "^10.12.0",
+    "firebase-admin": "^12.1.0"
+  },
+  "devDependencies": {
+    "@types/node": "^20.12.0",
+    "@types/react": "^18.3.0",
+    "@types/react-dom": "^18.3.0",
+    "typescript": "^5.4.0",
+    "ts-node": "^10.9.2",
+    "@faker-js/faker": "^8.4.1",
+    "concurrently": "^8.2.2",
+    "eslint": "^8.57.0",
+    "eslint-config-next": "^14.2.0",
+    "prettier": "^3.2.5",
+    "tailwindcss": "^3.4.0",
+    "autoprefixer": "^10.4.19",
+    "postcss": "^8.4.38",
+    "semantic-release": "^23.0.0",
+    "@semantic-release/changelog": "^6.0.3",
+    "@semantic-release/git": "^10.0.0",
+    "@semantic-release/github": "^10.0.3",
+    "@semantic-release/commit-analyzer": "^11.0.0",
+    "@semantic-release/release-notes-generator": "^12.0.0"
+  },
+  "release": {
+    "branches": ["main"],
+    "plugins": [
+      ["@semantic-release/commit-analyzer"],
+      ["@semantic-release/release-notes-generator"],
+      ["@semantic-release/changelog", { "changelogFile": "CHANGELOG.md" }],
+      ["@semantic-release/git", {
+        "assets": ["CHANGELOG.md", "package.json"],
+        "message": "chore(release): ${nextRelease.version} [skip ci]\n\n${nextRelease.notes}"
+      }],
+      ["@semantic-release/github"]
+    ]
+  }
+}
+

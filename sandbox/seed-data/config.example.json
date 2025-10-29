@@ -1,0 +1,48 @@
+{
+  "featureFlags": {
+    "enableNewCheckout": true,
+    "enableDarkMode": true,
+    "enableNotifications": true,
+    "enableAnalytics": false,
+    "enableBetaFeatures": false
+  },
+  "systemSettings": {
+    "siteName": "Demo Store",
+    "siteDescription": "A demonstration e-commerce store",
+    "defaultLanguage": "en",
+    "supportedLanguages": ["en", "es", "fr", "de"],
+    "timezone": "UTC",
+    "currency": "USD",
+    "dateFormat": "MM/DD/YYYY",
+    "timeFormat": "12h"
+  },
+  "apiSettings": {
+    "rateLimit": {
+      "requestsPerMinute": 100,
+      "burstLimit": 200
+    },
+    "timeout": 30000,
+    "retryAttempts": 3,
+    "cacheTimeout": 300
+  },
+  "emailSettings": {
+    "fromEmail": "noreply@demostore.com",
+    "fromName": "Demo Store",
+    "smtpHost": "smtp.example.com",
+    "smtpPort": 587,
+    "smtpSecure": false
+  },
+  "securitySettings": {
+    "passwordMinLength": 8,
+    "passwordRequireSpecialChars": true,
+    "sessionTimeout": 3600,
+    "maxLoginAttempts": 5,
+    "lockoutDuration": 900
+  },
+  "maintenanceMode": {
+    "enabled": false,
+    "message": "We're currently performing maintenance. Please check back later.",
+    "allowedIPs": ["127.0.0.1", "::1"]
+  }
+}
+

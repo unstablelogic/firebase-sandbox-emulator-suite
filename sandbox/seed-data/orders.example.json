@@ -1,0 +1,108 @@
+{
+  "statusWorkflow": [
+    {
+      "status": "pending",
+      "description": "Order placed, awaiting confirmation",
+      "nextStatuses": ["confirmed", "cancelled"]
+    },
+    {
+      "status": "confirmed",
+      "description": "Order confirmed, preparing for shipment",
+      "nextStatuses": ["processing", "cancelled"]
+    },
+    {
+      "status": "processing",
+      "description": "Order being prepared for shipment",
+      "nextStatuses": ["shipped", "cancelled"]
+    },
+    {
+      "status": "shipped",
+      "description": "Order shipped, in transit",
+      "nextStatuses": ["delivered", "returned"]
+    },
+    {
+      "status": "delivered",
+      "description": "Order delivered successfully",
+      "nextStatuses": ["completed", "returned"]
+    },
+    {
+      "status": "completed",
+      "description": "Order completed, no further action needed",
+      "nextStatuses": []
+    },
+    {
+      "status": "cancelled",
+      "description": "Order cancelled",
+      "nextStatuses": []
+    },
+    {
+      "status": "returned",
+      "description": "Order returned",
+      "nextStatuses": ["refunded"]
+    },
+    {
+      "status": "refunded",
+      "description": "Order refunded",
+      "nextStatuses": []
+    }
+  ],
+  "paymentMethods": [
+    {
+      "id": "credit_card",
+      "name": "Credit Card",
+      "description": "Visa, MasterCard, American Express"
+    },
+    {
+      "id": "debit_card",
+      "name": "Debit Card",
+      "description": "Bank debit card"
+    },
+    {
+      "id": "paypal",
+      "name": "PayPal",
+      "description": "PayPal account"
+    },
+    {
+      "id": "bank_transfer",
+      "name": "Bank Transfer",
+      "description": "Direct bank transfer"
+    },
+    {
+      "id": "cash_on_delivery",
+      "name": "Cash on Delivery",
+      "description": "Pay when delivered"
+    }
+  ],
+  "shippingOptions": [
+    {
+      "id": "standard",
+      "name": "Standard Shipping",
+      "description": "5-7 business days",
+      "cost": 5.99
+    },
+    {
+      "id": "express",
+      "name": "Express Shipping",
+      "description": "2-3 business days",
+      "cost": 12.99
+    },
+    {
+      "id": "overnight",
+      "name": "Overnight Shipping",
+      "description": "Next business day",
+      "cost": 24.99
+    },
+    {
+      "id": "pickup",
+      "name": "Store Pickup",
+      "description": "Pick up at store",
+      "cost": 0
+    }
+  ],
+  "taxRates": {
+    "default": 0.08,
+    "exempt": 0.00,
+    "reduced": 0.05
+  }
+}
+

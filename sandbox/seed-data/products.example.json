@@ -1,0 +1,43 @@
+{
+  "categories": [
+    {
+      "id": "electronics",
+      "name": "Electronics",
+      "description": "Electronic devices and accessories"
+    },
+    {
+      "id": "books",
+      "name": "Books",
+      "description": "Books and educational materials"
+    },
+    {
+      "id": "clothing",
+      "name": "Clothing",
+      "description": "Apparel and fashion items"
+    },
+    {
+      "id": "home",
+      "name": "Home & Garden",
+      "description": "Home improvement and garden supplies"
+    }
+  ],
+  "pricingTiers": {
+    "budget": { "min": 1, "max": 50 },
+    "mid": { "min": 51, "max": 200 },
+    "premium": { "min": 201, "max": 1000 },
+    "luxury": { "min": 1001, "max": 10000 }
+  },
+  "inventorySettings": {
+    "lowStockThreshold": 10,
+    "outOfStockThreshold": 0,
+    "autoReorder": true
+  },
+  "statusOptions": ["active", "inactive", "discontinued", "coming-soon"],
+  "specifications": {
+    "electronics": ["brand", "model", "warranty", "power_consumption"],
+    "books": ["author", "publisher", "isbn", "pages", "language"],
+    "clothing": ["size", "color", "material", "care_instructions"],
+    "home": ["dimensions", "material", "color", "assembly_required"]
+  }
+}
+

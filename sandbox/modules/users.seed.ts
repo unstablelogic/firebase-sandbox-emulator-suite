@@ -1,0 +1,118 @@
+/**
+ * Users Seed Module Example
+ * 
+ * This module demonstrates how to create a seed module using Faker.js
+ * for dynamic data and JSON templates for business logic.
+ */
+
+import { faker } from '@faker-js/faker';
+import { initializeApp, getApps } from 'firebase/app';
+import { 
+  getFirestore, 
+  connectFirestoreEmulator, 
+  collection, 
+  addDoc, 
+  getDocs, 
+  deleteDoc 
+} from 'firebase/firestore';
+import { SeedOptions, SeedResult } from './types';
+
+// Load template data
+const templateData = require('../seed-data/users.example.json');
+
+export async function seedUsers(options: SeedOptions = {}): Promise<SeedResult> {
+  const startTime = Date.now();
+  const { clear = false, count = 10 } = options;
+  
+  try {
+    // Initialize Firebase (emulator mode)
+    if (!getApps().length) {
+      const app = initializeApp({
+        projectId: 'demo-project',
+        apiKey: 'fake-api-key',
+        authDomain: 'demo-project.firebaseapp.com',
+        storageBucket: 'demo-project.appspot.com',
+        messagingSenderId: '123456789',
+        appId: '1:123456789:web:abcdef123456'
+      });
+      
+      const db = getFirestore(app);
+      connectFirestoreEmulator(db, 'localhost', 8080);
+    }
+    
+    const db = getFirestore();
+    const usersRef = collection(db, 'users');
+    
+    // Clear existing data if requested
+    if (clear) {
+      const snapshot = await getDocs(usersRef);
+      const deletePromises = snapshot.docs.map(doc => deleteDoc(doc.ref));
+      await Promise.all(deletePromises);
+      console.log(`Cleared ${snapshot.size} existing users`);
+    }
+    
+    // Generate users
+    const users = [];
+    for (let i = 0; i < count; i++) {
+      const user = {
+        // Faker.js for dynamic data
+        name: faker.person.fullName(),
+        email: faker.internet.email(),
+        phone: faker.phone.number(),
+        avatar: faker.image.avatar(),
+        createdAt: new Date(),
+        updatedAt: new Date(),
+        
+        // Template data for business logic
+        role: faker.helpers.arrayElement(templateData.roles),
+        status: faker.helpers.arrayElement(templateData.statusOptions),
+        preferences: {
+          ...templateData.defaultPreferences,
+          theme: faker.helpers.arrayElement(['light', 'dark']),
+          notifications: faker.datatype.boolean()
+        },
+        settings: {
+          ...templateData.defaultSettings,
+          emailVerified: faker.datatype.boolean(),
+          profileComplete: faker.datatype.boolean()
+        },
+        
+        // Additional realistic data
+        address: {
+          street: faker.location.streetAddress(),
+          city: faker.location.city(),
+          state: faker.location.state(),
+          zipCode: faker.location.zipCode(),
+          country: faker.location.country()
+        },
+        lastLogin: faker.date.recent({ days: 30 }),
+        loginCount: faker.number.int({ min: 0, max: 100 })
+      };
+      
+      users.push(user);
+    }
+    
+    // Add to Firestore
+    const addPromises = users.map(user => addDoc(usersRef, user));
+    await Promise.all(addPromises);
+    
+    console.log(`✅ Created ${count} users`);
+    
+    return {
+      module: 'users',
+      created: count,
+      duration: Date.now() - startTime,
+      success: true
+    };
+  } catch (error) {
+    console.error(`❌ Failed to seed users:`, error);
+    return {
+      module: 'users',
+      created: 0,
+      duration: Date.now() - startTime,
+      success: false,
+      error: error instanceof Error ? error.message : 'Unknown error'
+    };
+  }
+}
+
