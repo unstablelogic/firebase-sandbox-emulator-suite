@@ -30,23 +30,32 @@ export const functions = getFunctions(app);
 
 // Connect to emulators in development
 if (process.env.NEXT_PUBLIC_FIREBASE_EMULATOR === 'true') {
-  try {
-    // Connect to Firestore emulator
-    connectFirestoreEmulator(db, 'localhost', 8080);
-    
-    // Connect to Auth emulator
-    connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
-    
-    // Connect to Functions emulator
-    connectFunctionsEmulator(functions, 'localhost', 5001);
-    
-    console.log('🔥 Connected to Firebase Emulator Suite');
-    console.log('   • Firestore: localhost:8080');
-    console.log('   • Auth: localhost:9099');
-    console.log('   • Functions: localhost:5001');
-    console.log('   • UI: http://localhost:4000');
-  } catch (error) {
-    console.log('Firebase emulators already connected or connection failed:', error);
+  // Only connect if not already connected (check if running in browser/client-side)
+  if (typeof window !== 'undefined') {
+    try {
+      // Connect to Firestore emulator
+      connectFirestoreEmulator(db, 'localhost', 8080);
+      
+      // Connect to Auth emulator
+      connectAuthEmulator(auth, 'http://localhost:9099', { disableWarnings: true });
+      
+      // Connect to Functions emulator
+      connectFunctionsEmulator(functions, 'localhost', 5001);
+      
+      console.log('🔥 Connected to Firebase Emulator Suite');
+      console.log('   • Firestore: localhost:8080');
+      console.log('   • Auth: localhost:9099');
+      console.log('   • Functions: localhost:5001');
+      console.log('   • UI: http://localhost:4000');
+    } catch (error: any) {
+      // Check if error is due to emulator already being connected
+      if (error?.code === 'failed-precondition' || error?.message?.includes('already been called')) {
+        // Emulator already connected, which is fine
+        console.log('🔥 Firebase Emulator Suite already connected');
+      } else {
+        console.error('Firebase emulator connection failed:', error);
+      }
+    }
   }
 } else {
   console.log('🔥 Connected to Firebase Production');

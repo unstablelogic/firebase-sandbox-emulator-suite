@@ -26,8 +26,9 @@ export async function seedConfig(options: SeedOptions = {}): Promise<SeedResult>
   
   try {
     // Initialize Firebase (emulator mode)
+    let app;
     if (!getApps().length) {
-      const app = initializeApp({
+      app = initializeApp({
         projectId: 'demo-project',
         apiKey: 'fake-api-key',
         authDomain: 'demo-project.firebaseapp.com',
@@ -35,12 +36,16 @@ export async function seedConfig(options: SeedOptions = {}): Promise<SeedResult>
         messagingSenderId: '123456789',
         appId: '1:123456789:web:abcdef123456'
       });
-      
-      const db = getFirestore(app);
-      connectFirestoreEmulator(db, 'localhost', 8080);
+    } else {
+      app = getApps()[0];
     }
     
-    const db = getFirestore();
+    const db = getFirestore(app);
+    try {
+      connectFirestoreEmulator(db, 'localhost', 8080);
+    } catch (error) {
+      // Emulator already connected, ignore
+    }
     const configRef = collection(db, 'config');
     
     // Clear existing data if requested

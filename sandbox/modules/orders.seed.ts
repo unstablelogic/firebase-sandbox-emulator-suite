@@ -29,8 +29,9 @@ export async function seedOrders(options: SeedOptions = {}): Promise<SeedResult>
   
   try {
     // Initialize Firebase (emulator mode)
+    let app;
     if (!getApps().length) {
-      const app = initializeApp({
+      app = initializeApp({
         projectId: 'demo-project',
         apiKey: 'fake-api-key',
         authDomain: 'demo-project.firebaseapp.com',
@@ -38,12 +39,16 @@ export async function seedOrders(options: SeedOptions = {}): Promise<SeedResult>
         messagingSenderId: '123456789',
         appId: '1:123456789:web:abcdef123456'
       });
-      
-      const db = getFirestore(app);
-      connectFirestoreEmulator(db, 'localhost', 8080);
+    } else {
+      app = getApps()[0];
     }
     
-    const db = getFirestore();
+    const db = getFirestore(app);
+    try {
+      connectFirestoreEmulator(db, 'localhost', 8080);
+    } catch (error) {
+      // Emulator already connected, ignore
+    }
     const ordersRef = collection(db, 'orders');
     
     // Clear existing data if requested
@@ -61,6 +66,14 @@ export async function seedOrders(options: SeedOptions = {}): Promise<SeedResult>
     const userIds = usersSnapshot.docs.map(doc => doc.id);
     const products = productsSnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }));
     
+    // Ensure we have at least one user and one product to avoid arrayElement errors
+    if (userIds.length === 0) {
+      console.warn('⚠️ No users found. Orders will be created with null userId.');
+    }
+    if (products.length === 0) {
+      throw new Error('No products found. Please seed products first before seeding orders.');
+    }
+    
     // Generate orders
     const orders = [];
     for (let i = 0; i < count; i++) {
@@ -75,6 +88,7 @@ export async function seedOrders(options: SeedOptions = {}): Promise<SeedResult>
       let subtotal = 0;
       
       for (let j = 0; j < lineItemCount; j++) {
+        // products array is guaranteed to have at least one item due to check above
         const product = faker.helpers.arrayElement(products) as any;
         const quantity = faker.number.int({ min: 1, max: 5 });
         const price = product.price || faker.number.float({ min: 10, max: 500, fractionDigits: 2 });

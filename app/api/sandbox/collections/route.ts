@@ -1,6 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { db } from '@/lib/firebase';
-import { collection, getDocs, limit, startAfter, query, orderBy } from 'firebase/firestore';
+import { collection, getDocs, query, orderBy, documentId } from 'firebase/firestore';
 
 export async function GET(request: NextRequest) {
   try {
@@ -16,31 +16,30 @@ export async function GET(request: NextRequest) {
     }
 
     // Get collection data
+    // For admin panel, fetch all docs and paginate in memory (works fine for limited datasets)
     const collectionRef = collection(db, collectionName);
-    let q = query(collectionRef, orderBy('__name__'), limit(pageLimit));
-
-    if (page > 0) {
-      // For pagination, you would need to implement startAfter with the last document
-      // This is a simplified version
-      q = query(collectionRef, orderBy('__name__'), limit(pageLimit));
-    }
-
-    const snapshot = await getDocs(q);
-    const documents = snapshot.docs.map(doc => ({
+    const allDocsQuery = query(collectionRef, orderBy(documentId()));
+    const allSnapshot = await getDocs(allDocsQuery);
+    const allDocs = allSnapshot.docs;
+    
+    // Calculate pagination
+    const startIndex = page * pageLimit;
+    const endIndex = startIndex + pageLimit;
+    const documents = allDocs.slice(startIndex, endIndex).map(doc => ({
       id: doc.id,
       data: doc.data()
     }));
 
     return NextResponse.json({
       documents,
-      total: documents.length, // This would need to be calculated properly
-      hasMore: documents.length === pageLimit,
+      total: allDocs.length,
+      hasMore: endIndex < allDocs.length,
       page,
       limit: pageLimit
     });
   } catch (error) {
     return NextResponse.json(
-      { error: 'Failed to fetch collection data' },
+      { error: 'Failed to fetch collection data', details: error instanceof Error ? error.message : 'Unknown error' },
       { status: 500 }
     );
   }
